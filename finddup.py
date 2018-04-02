@@ -21,23 +21,29 @@ def get_duplicate_files(path):
             for entry in it:
                 if entry.is_dir():
                     dup(entry.path, paths_per_hash, hashes_per_size, firsts_of_size, sizes_found)
+                    continue
+
+                file_size = entry.stat().st_size
+                if file_size == 0:
+                    continue
+
+                if file_size not in sizes_found:
+                    sizes_found.append(file_size)
+                    firsts_of_size[file_size] = entry.path
+                    continue
+
+                if file_size not in hashes_per_size:
+                    prev_hash = get_hash(firsts_of_size[file_size])
+                    hashes_per_size[file_size] = [prev_hash]
+                    paths_per_hash[prev_hash] = [firsts_of_size[file_size]]
+
+                file_hash = get_hash(entry.path)
+
+                if file_hash not in hashes_per_size[file_size]:
+                    hashes_per_size[file_size].append(file_hash)
+                    paths_per_hash[file_hash] = [entry.path]
                 else:
-                    file_size = entry.stat().st_size
-                    if file_size:
-                        if file_size not in sizes_found:
-                            sizes_found.append(file_size)
-                            firsts_of_size[file_size] = entry.path
-                        else:
-                            if file_size not in hashes_per_size:
-                                prev_hash = get_hash(firsts_of_size[file_size])
-                                hashes_per_size[file_size] = [prev_hash]
-                                paths_per_hash[prev_hash] = [firsts_of_size[file_size]]
-                            file_hash = get_hash(entry.path)
-                            if file_hash not in hashes_per_size[file_size]:
-                                hashes_per_size[file_size].append(file_hash)
-                                paths_per_hash[file_hash] = [entry.path]
-                            else:
-                                paths_per_hash[file_hash].append(entry.path)
+                    paths_per_hash[file_hash].append(entry.path)
 
     paths_per_hash = {}
     dup(path, paths_per_hash, {}, {}, [])
