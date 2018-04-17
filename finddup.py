@@ -1,6 +1,5 @@
 import hashlib
 import os
-import os.path
 import sys
 
 
@@ -15,6 +14,7 @@ def get_hash(path):
 
 
 def powerwalk(top):
+    """Returns an iterator of os.DirEntry objects for files under top"""
     with os.scandir(top) as it:
         for entry in it:
             if entry.is_dir():
@@ -32,6 +32,7 @@ def get_duplicate_files(path):
 
     for entry in powerwalk(path):
         file_size = entry.stat().st_size
+
         if file_size == 0:
             continue
 
@@ -53,6 +54,7 @@ def get_duplicate_files(path):
             paths_per_hash[file_hash].append(entry.path)
 
     duplicate_files = {}
+
     for file_hash, paths in paths_per_hash.items():
         if len(paths) > 1:
             duplicate_files[file_hash] = paths
@@ -66,7 +68,7 @@ if __name__ == '__main__':
     if not sys.argv[1] == '--delete':
         for file_hash in duplicate_files:
             for path in duplicate_files[file_hash]:
-                print(f'{file_hash}: {path}')
+                print(f'{file_hash}:', path)
     else:
         for file_hash in duplicate_files:
             for path in duplicate_files[file_hash][1:]:
