@@ -7,14 +7,18 @@ def get_hash(path):
     """Returns the MD5 hash of a given file"""
 
     hasher = hashlib.md5()
+
     with open(path, 'rb') as file:
         file_content = file.read()
+
     hasher.update(file_content)
+
     return hasher.hexdigest()
 
 
 def powerwalk(top):
     """Returns an iterator of os.DirEntry objects for files under top"""
+
     with os.scandir(top) as it:
         for entry in it:
             if entry.is_dir():
