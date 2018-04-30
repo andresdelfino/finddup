@@ -8,6 +8,7 @@ import tkinter.ttk
 
 import finddup
 
+
 class FindDupGUI(tkinter.ttk.Frame):
     def __init__(self, master):
         super().__init__(master)
@@ -25,38 +26,46 @@ class FindDupGUI(tkinter.ttk.Frame):
         self.master.geometry('750x500')
 
     def crear_widgets(self):
-        self.padding = {'padx': 5, 'pady': 5}
+        self.padding = {'padx': 0, 'pady': 0}
 
-        a = tkinter.ttk.Frame(self)
-        a.pack(fill=tkinter.X)
+        primer_marco = tkinter.ttk.Frame(self)
+        primer_marco.pack(fill=tkinter.X)
 
-        tkinter.ttk.Label(a, text='Ubicación:').pack(**self.padding, side=tkinter.LEFT)
+        tkinter.ttk.Label(primer_marco, text='Ubicación:').pack(**self.padding, side=tkinter.LEFT)
 
         self.ubicacion = tkinter.StringVar()
-        tkinter.ttk.Entry(a, textvariable=self.ubicacion).pack(**self.padding, side=tkinter.LEFT, expand=tkinter.YES, fill=tkinter.X)
+        tkinter.ttk.Entry(primer_marco, textvariable=self.ubicacion).pack(**self.padding, side=tkinter.LEFT, expand=tkinter.YES, fill=tkinter.X)
 
-        tkinter.ttk.Button(a, text='...', command=self.seleccionar_carpeta).pack(**self.padding, side=tkinter.LEFT)
+        tkinter.ttk.Button(primer_marco, text='...', command=self.seleccionar_carpeta).pack(**self.padding, side=tkinter.LEFT)
 
-        self.buscar_boton = tkinter.ttk.Button(a, text='Buscar', command=self.buscar)
+        self.buscar_boton = tkinter.ttk.Button(primer_marco, text='Buscar', command=self.buscar)
         self.buscar_boton.pack(**self.padding)
 
-        b = tkinter.ttk.Frame(self)
-        b.pack(fill=tkinter.X)
+        segundo_marco = tkinter.ttk.Frame(self)
+        segundo_marco.pack(fill=tkinter.X)
 
-        self.seleccionar_duplicados = tkinter.ttk.Button(b, text='Seleccionar duplicados', command=self.seleccionar_duplicados)
+        self.seleccionar_duplicados = tkinter.ttk.Button(segundo_marco, text='Seleccionar duplicados', command=self.seleccionar_duplicados)
         self.seleccionar_duplicados.pack(**self.padding, side=tkinter.LEFT)
 
-        self.no_seleccionar = tkinter.ttk.Button(b, text='No seleccionar ninguno', command=self.no_seleccionar)
+        self.no_seleccionar = tkinter.ttk.Button(segundo_marco, text='No seleccionar ninguno', command=self.no_seleccionar)
         self.no_seleccionar.pack(**self.padding, side=tkinter.LEFT)
 
-        self.eliminar = tkinter.ttk.Button(b, text='Eliminar...', command=self.eliminar)
+        self.eliminar = tkinter.ttk.Button(segundo_marco, text='Eliminar...', command=self.eliminar)
         self.eliminar.pack(**self.padding, side=tkinter.LEFT)
 
-        self.listado = tkinter.ttk.Treeview(self, columns=('Ubicación'), height=5)
+        self.tercer_marco = tkinter.ttk.Frame(self)
+        self.tercer_marco.pack(expand=tkinter.YES, fill=tkinter.BOTH)
+
+        self.listado = tkinter.ttk.Treeview(self.tercer_marco, columns=('Ubicación'))
         self.listado.heading('#0', text='Hash MD5')
         self.listado.heading('Ubicación', text='Ubicación')
         self.listado.column('#0', width=250, stretch=tkinter.NO)
-        self.listado.pack(**self.padding, expand=tkinter.YES, fill=tkinter.BOTH)
+        self.listado.pack(side=tkinter.LEFT, expand=tkinter.YES, fill=tkinter.BOTH)
+
+        self.scrollbar = tkinter.ttk.Scrollbar(self.tercer_marco, orient=tkinter.VERTICAL, command=self.listado.yview)
+        self.scrollbar.pack(side=tkinter.RIGHT, fill=tkinter.Y)
+
+        self.listado['yscrollcommand'] = self.scrollbar.set
 
         self.estado = tkinter.StringVar()
         self.estado.set('Listo.')

@@ -1,16 +1,14 @@
 import hashlib
 import os
-import sys
 
 
 def get_hash(path):
     """Returns the MD5 hash of a given file"""
 
-    hasher = hashlib.md5()
-
     with open(path, 'rb') as file:
         file_content = file.read()
 
+    hasher = hashlib.md5()
     hasher.update(file_content)
 
     return hasher.hexdigest()
@@ -21,10 +19,10 @@ def powerwalk(top):
 
     with os.scandir(top) as it:
         for entry in it:
+            yield entry
+
             if entry.is_dir():
                 yield from powerwalk(entry.path)
-            else:
-                yield entry
 
 
 def get_duplicate_files(path):
@@ -35,6 +33,9 @@ def get_duplicate_files(path):
     firsts_of_size = {}
 
     for entry in powerwalk(path):
+        if entry.is_dir():
+            continue
+
         file_size = entry.stat().st_size
 
         if file_size == 0:
@@ -57,24 +58,6 @@ def get_duplicate_files(path):
         else:
             paths_per_hash[file_hash].append(entry.path)
 
-    duplicate_files = {}
-
     for file_hash, paths in paths_per_hash.items():
         if len(paths) > 1:
-            duplicate_files[file_hash] = paths
-
-    return duplicate_files
-
-
-if __name__ == '__main__':
-    duplicate_files = get_duplicate_files(sys.argv[-1])
-
-    if not sys.argv[1] == '--delete':
-        for file_hash in duplicate_files:
-            for path in duplicate_files[file_hash]:
-                print(f'{file_hash}:', path)
-    else:
-        for file_hash in duplicate_files:
-            for path in duplicate_files[file_hash][1:]:
-                print(path)
-                os.remove(path)
+            yield file_hash, paths
