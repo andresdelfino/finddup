@@ -1,24 +1,28 @@
+import argparse
 import os
-import sys
 
 import finddup
 
 
 def main():
-    if len(sys.argv) == 3 and sys.argv[1] == '--delete':
-        delete = True
-    else:
-        delete = False
+    parser = argparse.ArgumentParser(description='Find duplicate files.')
+    parser.add_argument('-d', action='store_true', dest='delete', help='Delete duplicate files.')
+    parser.add_argument('path', help='Path to search.')
 
-    for hash, ocurrences in finddup.get_duplicate_files(sys.argv[-1]):
-        if not delete:
+    args = parser.parse_args()
+
+    for hash, ocurrences in finddup.get_duplicate_files(args.path):
+        if not args.delete:
             print(f'{hash}:')
 
-        for path in ocurrences[0 if not delete else 1:]:
+        for path in ocurrences[0 if not args.delete else 1:]:
             print(path)
 
-            if delete:
-                os.remove(path)
+            if args.delete:
+                try:
+                    os.remove(path)
+                except PermissionError:
+                    print('PermissionError while deleting:', path)
 
         print()
 
