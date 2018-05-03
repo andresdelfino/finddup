@@ -1,8 +1,10 @@
 # finddup
-Find duplicate files and optionally delete them.
+Find duplicate files by MD5 hash.
 
 Show the duplicate files and their MD5 hash:
-finddup.py PATH
+finddupcli.py PATH
 
 Delete duplicate files:
-finddup.py --delete PATH
+finddupcli.py --delete PATH
+
+finddupgui.py is a GUI based on Tkinter for finddup.
