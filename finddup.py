@@ -3,7 +3,7 @@ import os
 
 
 def get_hash(path):
-    """Returns the MD5 hash of a given file"""
+    """Returns the MD5 hash of a file"""
 
     with open(path, 'rb') as file:
         file_content = file.read()
