@@ -15,7 +15,7 @@ def get_hash(path):
 
 
 def powerwalk(top):
-    """Returns an iterator of os.DirEntry objects for files under top"""
+    """Returns an iterator of os.DirEntry objects under top"""
 
     with os.scandir(top) as it:
         for entry in it:
@@ -42,43 +42,41 @@ def get_duplicate_files(path):
 
     prev_size = None
     group_by_size = []
-    for file in sorted(file_list, key=lambda x: x[1]):
+    for file_path, file_size in sorted(file_list, key=lambda x: x[1]) + [(None, None)]:
         if prev_size is None:
-            prev_size = file[1]
-            group_by_size.append(file[0])
+            prev_size = file_size
+            group_by_size.append(file_path)
             continue
 
-        if file[1] == prev_size:
-            group_by_size.append(file[0])
+        if file_size == prev_size:
+            group_by_size.append(file_path)
         else:
             if len(group_by_size) > 1:
-                files = []
-                duplicate_files = []
-
+                file_list_2 = []
                 for file_path in group_by_size:
                     hash = get_hash(file_path)
-                    group_by_hash.append((file_path, hash))
+                    file_list_2.append((file_path, hash))
 
                 prev_hash = None
                 group_by_hash = []
-                for file_2 in sorted(files, key=lambda x: x[1]):
+                for file_2_path, file_2_hash in sorted(file_list_2, key=lambda y: y[1]) + [(None, None)]:
                     if prev_hash is None:
-                        prev_hash = file_2[1]
-                        group_by_hash.append(file_2[0])
+                        prev_hash = file_2_hash
+                        group_by_hash.append(file_2_path)
                         continue
 
-                    if file_2[1] == prev_hash:
-                        group_by_hash.append(file_2[0])
+                    if file_2_hash == prev_hash:
+                        group_by_hash.append(file_2_path)
                     else:
                         if len(group_by_hash) > 1:
                             yield prev_hash, group_by_hash
 
                         group_by_hash.clear()
 
-                        prev_hash = file_2[1]
-                        group_by_hash.append(file_2[0])
+                        prev_hash = file_2_hash
+                        group_by_hash.append(file_2_path)
 
             group_by_size.clear()
 
-            prev_size = file[1]
-            group_by_size.append(file[0])
+            prev_size = file_size
+            group_by_size.append(file_path)
