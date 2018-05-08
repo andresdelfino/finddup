@@ -53,28 +53,28 @@ def get_duplicate_files(path):
         else:
             if len(group_by_size) > 1:
                 file_list_2 = []
-                for file_path in group_by_size:
-                    hash = get_hash(file_path)
-                    file_list_2.append((file_path, hash))
+                for file_path_2 in group_by_size:
+                    hash = get_hash(file_path_2)
+                    file_list_2.append((file_path_2, hash))
 
                 prev_hash = None
                 group_by_hash = []
-                for file_2_path, file_2_hash in sorted(file_list_2, key=lambda y: y[1]) + [(None, None)]:
+                for file_path_2, file_hash_2 in sorted(file_list_2, key=lambda y: y[1]) + [(None, None)]:
                     if prev_hash is None:
-                        prev_hash = file_2_hash
-                        group_by_hash.append(file_2_path)
+                        prev_hash = file_hash_2
+                        group_by_hash.append(file_path_2)
                         continue
 
-                    if file_2_hash == prev_hash:
-                        group_by_hash.append(file_2_path)
+                    if file_hash_2 == prev_hash:
+                        group_by_hash.append(file_path_2)
                     else:
                         if len(group_by_hash) > 1:
                             yield prev_hash, group_by_hash
 
                         group_by_hash.clear()
 
-                        prev_hash = file_2_hash
-                        group_by_hash.append(file_2_path)
+                        prev_hash = file_hash_2
+                        group_by_hash.append(file_path_2)
 
             group_by_size.clear()
 

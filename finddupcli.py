@@ -12,11 +12,12 @@ def main():
     args = parser.parse_args()
 
     for hash, ocurrences in finddup.get_duplicate_files(args.path):
-        if not args.delete:
-            print(f'{hash}:')
+        #if not args.delete:
+            #print(f'{hash}:')
 
         for path in ocurrences[0 if not args.delete else 1:]:
-            print(path)
+            #print(path)
+            print(hash, path)
 
             if args.delete:
                 try:
