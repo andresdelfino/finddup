@@ -1,4 +1,5 @@
 import hashlib
+import itertools
 import os
 
 
@@ -40,43 +41,21 @@ def get_duplicate_files(path):
 
         file_list.append((entry.path, file_size))
 
-    prev_size = None
-    group_by_size = []
-    for file_path, file_size in sorted(file_list, key=lambda x: x[1]) + [(None, None)]:
-        if prev_size is None:
-            prev_size = file_size
-            group_by_size.append(file_path)
-            continue
+    key = lambda x: x[1]
+    file_list = sorted(file_list, key=key)
+    for file_size, file_paths in itertools.groupby(file_list, key=key):
+        file_paths = [x[0] for x in file_paths]
 
-        if file_size == prev_size:
-            group_by_size.append(file_path)
-        else:
-            if len(group_by_size) > 1:
-                file_list_2 = []
-                for file_path_2 in group_by_size:
-                    hash = get_hash(file_path_2)
-                    file_list_2.append((file_path_2, hash))
+        if len(file_paths) > 1:
+            file_list = []
+            for file_path in file_paths:
+                hash = get_hash(file_path)
+                file_list.append((file_path, hash))
 
-                prev_hash = None
-                group_by_hash = []
-                for file_path_2, file_hash_2 in sorted(file_list_2, key=lambda y: y[1]) + [(None, None)]:
-                    if prev_hash is None:
-                        prev_hash = file_hash_2
-                        group_by_hash.append(file_path_2)
-                        continue
+            key = lambda x: x[1]
+            file_list = sorted(file_list, key=key)
+            for file_hash, file_paths in itertools.groupby(file_list, key=key):
+                file_paths = [x[0] for x in file_paths]
 
-                    if file_hash_2 == prev_hash:
-                        group_by_hash.append(file_path_2)
-                    else:
-                        if len(group_by_hash) > 1:
-                            yield prev_hash, group_by_hash
-
-                        group_by_hash.clear()
-
-                        prev_hash = file_hash_2
-                        group_by_hash.append(file_path_2)
-
-            group_by_size.clear()
-
-            prev_size = file_size
-            group_by_size.append(file_path)
+                if len(file_paths) > 1:
+                    yield file_hash, file_paths
