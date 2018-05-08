@@ -28,9 +28,7 @@ def powerwalk(top):
 def get_duplicate_files(path):
     """Returns a list of duplicate files of a directory in the form of a hash-keyed dictionary"""
 
-    paths_per_hash = {}
-    hashes_per_size = {}
-    firsts_of_size = {}
+    file_list = []
 
     for entry in powerwalk(path):
         if entry.is_dir():
@@ -41,23 +39,48 @@ def get_duplicate_files(path):
         if file_size == 0:
             continue
 
-        if file_size not in firsts_of_size:
-            firsts_of_size[file_size] = entry.path
+        file_list.append((entry.path, file_size))
+
+    prev_size = None
+    group = []
+
+    for file in sorted(file_list, key=lambda x: x[1]):
+        if prev_size is None:
+            prev_size = file[1]
+            group.append(file[0])
             continue
 
-        if file_size not in hashes_per_size:
-            prev_hash = get_hash(firsts_of_size[file_size])
-            hashes_per_size[file_size] = [prev_hash]
-            paths_per_hash[prev_hash] = [firsts_of_size[file_size]]
-
-        file_hash = get_hash(entry.path)
-
-        if file_hash not in hashes_per_size[file_size]:
-            hashes_per_size[file_size].append(file_hash)
-            paths_per_hash[file_hash] = [entry.path]
+        if file[1] == prev_size:
+            group.append(file[0])
         else:
-            paths_per_hash[file_hash].append(entry.path)
+            if len(group) > 1:
+                files = []
+                duplicate_files = []
 
-    for file_hash, paths in paths_per_hash.items():
-        if len(paths) > 1:
-            yield file_hash, paths
+                for file_path in group:
+                    hash = get_hash(file_path)
+                    files.append((file_path, hash))
+
+                prev_hash = None
+                duplicate_files = []
+                for file_spam in sorted(files, key=lambda x: x[1]):
+                    if prev_hash is None:
+                        prev_hash = file_spam[1]
+                        duplicate_files.append(file_spam[0])
+                        continue
+
+                    if file_spam[1] == prev_hash:
+                        duplicate_files.append(file_spam[0])
+                    else:
+                        if len(duplicate_files) > 1:
+                            yield prev_hash, duplicate_files
+
+                        duplicate_files.clear()
+
+                        prev_hash = file_spam[1]
+                        duplicate_files.append(file_spam[0])
+
+            group.clear()
+
+            prev_size = file[1]
+            group.append(file[0])
