@@ -14,7 +14,7 @@ finddupcli.py --delete PATH
 ```
 
 ## finddupgui
-Use finddup with a tkinter-based GUI:
+Use finddup with a Tk-based GUI:
 ```
 finddupgui.py
 ```
