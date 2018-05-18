@@ -100,7 +100,7 @@ class FindDupGUI(tkinter.ttk.Frame):
         self.after(500, self.esperar)
 
     def buscar_thread(self):
-        for hash, ocurrencias in finddup.get_duplicate_files(str(self.ubicacion.get())):
+        for hash, size, ocurrencias in finddup.get_duplicate_files(str(self.ubicacion.get())):
             item = self.listado.insert('', tkinter.END, text=hash, open=tkinter.YES)
 
             for ocurrencia in ocurrencias:
@@ -125,7 +125,6 @@ class FindDupGUI(tkinter.ttk.Frame):
         self.listado.selection_set()
 
     def eliminar(self):
-        # blocking?
         eliminar_archivos = tkinter.messagebox.askyesno(self.nombre, '¿Eliminar archivos seleccionados?')
 
         if eliminar_archivos:
@@ -136,7 +135,7 @@ class FindDupGUI(tkinter.ttk.Frame):
                 try:
                     os.remove(archivo)
                 except PermissionError:
-                    print('PermissionError', archivo) ###debug
+                    print('PermissionError', archivo)
                 else:
                     self.listado.delete(item)
                     n += 1

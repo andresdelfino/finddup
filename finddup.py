@@ -58,4 +58,4 @@ def get_duplicate_files(path):
                 file_paths = [x[0] for x in file_paths]
 
                 if len(file_paths) > 1:
-                    yield file_hash, file_paths
+                    yield file_hash, file_size, file_paths
