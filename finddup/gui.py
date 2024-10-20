@@ -1,5 +1,3 @@
-#!/usr/bin/env python
-
 import os
 import os.path
 import threading
@@ -156,7 +154,7 @@ class FindDupGUI(tkinter.ttk.Frame):
                 self.listado.selection_add(item)
 
 
-if __name__ == '__main__':
+def main():
     root = tkinter.Tk()
     FindDupGUI(root)
     root.mainloop()

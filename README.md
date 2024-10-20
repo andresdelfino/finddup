@@ -2,19 +2,19 @@
 Find duplicate files by MD5 hash.
 
 
-## finddupcli
+## CLI
 Show duplicate files:
 ```
-finddupcli.py PATH
+finddup_cli PATH
 ```
 
 Delete duplicate files:
 ```
-finddupcli.py --delete PATH
+finddup_cli --delete PATH
 ```
 
-## finddupgui
+## GUI
 Use finddup with a Tk-based GUI:
 ```
-finddupgui.py
+finddup_gui
 ```
